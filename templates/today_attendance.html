@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Today's Logs | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/teacher-dashboard" class="sidebar-icon active">📊</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h1 class="cursive-header">Today's Logs</h1>
+                    <p class="text-muted" style="font-size: 0.9rem;">Live attendance feed</p>
+                </div>
+                <a href="/teacher-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back to Dashboard</a>
+            </div>
+
+            <div class="card-premium">
+                {% if records %}
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in records %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ r.student }}</td>
+                            <td class="text-muted">{{ r.subject }}</td>
+                            <td class="text-muted">{{ r.scan_time }}</td>
+                            <td class="status-mint">{{ r.status }}</td>
+                            <td>
+                                {% if r.status == "Present" %}
+                                <a href="/mark-absent/{{ r._id }}"
+                                    style="color: var(--accent-purple); font-size: 0.8rem; text-decoration: none; font-weight: 600;">MARK
+                                    ABSENT</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="text-align: center; padding: 5rem 0;">
+                    <span style="font-size: 4rem; display: block; margin-bottom: 1rem; opacity: 0.2;">🔍</span>
+                    <p class="text-muted">No attendance recorded yet today.</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

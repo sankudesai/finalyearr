@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Scanner | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        #reader {
+            width: 100%;
+            border-radius: var(--radius-md) !important;
+            overflow: hidden;
+            border: none !important;
+            background: #000 !important;
+        }
+
+        #reader__dashboard_section_csr button {
+            background: var(--accent-yellow) !important;
+            color: #000 !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            margin: 10px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/student-dashboard" class="sidebar-icon active">🎓</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="cursive-header">QR Scanner</h1>
+                <a href="/student-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Cancel</a>
+            </div>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="card-premium">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">📷</span>
+                        <h2>Scan Session QR</h2>
+                    </div>
+
+                    <div id="reader"></div>
+
+                    <form id="result-form" action="/scan-result" method="POST" style="display: none;">
+                        <input type="hidden" name="session_id" id="qr-input">
+                    </form>
+
+                    <div id="status-msg" class="text-muted mt-4 text-center small">
+                        Position the code within the frame
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById('qr-input').value = decodedText;
+
+            // Visual feedback before redirect
+            document.getElementById('status-msg').innerHTML = "✅ Code captured! Redirecting...";
+            document.getElementById('status-msg').style.color = "var(--accent-mint)";
+
+            html5QrcodeScanner.clear().then(_ => {
+                document.getElementById('result-form').submit();
+            }).catch(error => {
+                console.error("Failed to clear scanner", error);
+                document.getElementById('result-form').submit();
+            });
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            {
+                fps: 15,
+                qrbox: { width: 250, height: 250 },
+                showTorchButtonIfSupported: true
+            },
+            /* verbose= */ false
+        );
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+
+</html>

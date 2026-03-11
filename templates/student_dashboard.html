@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Student Portal | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon" title="Home">🏠</a>
+            <a href="/student-dashboard" class="sidebar-icon active">🎓</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/notifications" class="sidebar-icon">📢</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="cursive-header">Student Portal</h1>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-weight: 600; font-size: 0.9rem;">{{ session['user'] }}</p>
+                        <p class="text-muted" style="font-size: 0.75rem;">Student Account</p>
+                    </div>
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-mint); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000;">
+                        {{ session['user'][0] | upper }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                <div>
+                    <h2 style="font-size: 2.25rem;">Welcome back!</h2>
+                    <p class="text-muted">Your attendance is looking great this week.</p>
+                </div>
+                <a href="/scan-qr" class="btn-premium"
+                    style="background: var(--accent-yellow); color: #000; padding: 1rem 2rem; font-size: 1.1rem;">
+                    Scan Session QR 📷
+                </a>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card card-mint">
+                    <div>
+                        <h4>Attendance Rate</h4>
+                        <p class="value">{{ percentage }}%</p>
+                    </div>
+                    <a href="/student-analytics" class="link">View Analytics →</a>
+                </div>
+
+                <div class="summary-card card-yellow">
+                    <div>
+                        <h4>Total Classes</h4>
+                        <p class="value">{{ total }}</p>
+                    </div>
+                    <a href="/my-attendance" class="link">Attendance History →</a>
+                </div>
+
+                <div class="summary-card card-purple">
+                    <div>
+                        <h4>Latest Update</h4>
+                        <p class="value">📢</p>
+                    </div>
+                    <a href="/notifications" class="link">Check Notifications →</a>
+                </div>
+            </div>
+
+            <div class="card-premium">
+                <div class="card-title-row">
+                    <h3>Recent Attendance Records</h3>
+                    <a href="/my-attendance" class="btn-premium">View All</a>
+                </div>
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_records %}
+                        {% for record in recent_records %}
+                        <tr>
+                            <td class="text-muted">{{ record.date }}</td>
+                            <td style="font-weight: 600;">{{ record.subject }}</td>
+                            <td class="text-muted">{{ record.scan_time }}</td>
+                            <td
+                                class="{% if record.status == 'Present' %}status-mint{% else %}status-yellow{% endif %}">
+                                {{ record.status }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted" style="padding: 2rem;">No attendance records
+                                found yet.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

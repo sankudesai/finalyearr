@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Verification Status | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body class="login-container">
+
+    <div class="card-premium" style="width: 100%; max-width: 500px; text-align: center; padding: 4rem 2rem;">
+        {% if status == "Success" %}
+        <div style="font-size: 5rem; margin-bottom: 1.5rem;">🏆</div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-mint);">Confirmed!</h1>
+        <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 3rem;">{{ message }}</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/student-dashboard" class="btn-premium" style="flex: 1; justify-content: center;">Back to
+                Portal</a>
+        </div>
+        {% elif status == "Entry Recorded" %}
+        <div style="font-size: 5rem; margin-bottom: 1.5rem;">⏳</div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--accent-yellow);">Entry Logged</h1>
+        <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 3rem;">{{ message }}</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/scan-qr" class="btn-premium"
+                style="flex: 1; justify-content: center; background: var(--accent-mint); color: #000;">Scan Confirmation
+                QR</a>
+        </div>
+        {% else %}
+        <div style="font-size: 5rem; margin-bottom: 1.5rem;">⚠️</div>
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--accent-purple);">{{ status }}</h1>
+        <p class="text-muted" style="font-size: 1rem; margin-bottom: 3rem;">{{ message }}</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/scan-qr" class="btn-premium" style="flex: 1; justify-content: center;">Try Again</a>
+            <a href="/student-dashboard" class="btn-premium"
+                style="flex: 1; justify-content: center; background: rgba(255,255,255,0.05); color: white;">Exit</a>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

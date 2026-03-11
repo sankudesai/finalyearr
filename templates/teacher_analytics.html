@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Faculty Intel | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/teacher-dashboard" class="sidebar-icon active">📊</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h1 class="cursive-header">Faculty Intel</h1>
+                    <p class="text-muted" style="font-size: 0.9rem;">Advanced classroom performance metrics</p>
+                </div>
+                <a href="/teacher-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back to Dashboard</a>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Main Trend Chart -->
+                <div class="card-premium">
+                    <h3 style="margin-bottom: 1.5rem;">Attendance Trend (Last 7 Days)</h3>
+                    <div style="height: 350px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Today's Stats -->
+                <div class="card-premium"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <div class="text-muted" style="font-size: 0.8rem; margin-bottom: 1rem; letter-spacing: 1px;">TODAY'S
+                        TURNOUT</div>
+                    <div style="font-size: 5rem; font-weight: 700; color: var(--accent-mint);">{{ percentage }}%</div>
+                    <p class="text-muted mt-4">Average attendance across all sessions today.</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <!-- Hourly Heatmap -->
+                <div class="card-premium">
+                    <h3 style="margin-bottom: 1.5rem;">Peak Scanning Hours (Today)</h3>
+                    <div style="height: 300px;">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- At-Risk Students -->
+                <div class="card-premium">
+                    <div class="card-title-row">
+                        <h3>Monitor At-Risk Students</h3>
+                        <span class="status-purple">Attendance < 75%</span>
+                    </div>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <table class="table-premium">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Rate</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if at_risk %}
+                                {% for s in at_risk %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ s.id }}</td>
+                                    <td class="status-yellow">{{ s.percent }}%</td>
+                                    <td><a href="#"
+                                            style="color: var(--accent-purple); font-size: 0.8rem; text-decoration: none; font-weight: 600;">NOTIFY</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted" style="padding: 3rem;">All students
+                                        are above the 75% health threshold.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Weekly Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: {{ trend_labels| tojson }},
+            datasets: [{
+                label: 'Attendance %',
+                data: {{ trend_values| tojson }},
+            borderColor: '#27e9b4',
+            backgroundColor: 'rgba(39, 233, 180, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 6,
+            pointBackgroundColor: '#27e9b4'
+                }]
+            },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#8a8d91', callback: value => value + '%' }
+                },
+                x: { grid: { display: false }, ticks: { color: '#8a8d91' } }
+            }
+        }
+        });
+
+        // Hourly Heatmap (Simplified to Bar Chart)
+        const hourlyData = {{ hourly_data| tojson }};
+        const activeHours = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p"];
+        const activeValues = hourlyData.slice(8, 18); // Only show core school hours
+
+        new Chart(document.getElementById('hourlyChart'), {
+            type: 'bar',
+            data: {
+                labels: activeHours,
+                datasets: [{
+                    label: 'Scans',
+                    data: activeValues,
+                    backgroundColor: '#6366f1',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8a8d91', stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: '#8a8d91' } }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

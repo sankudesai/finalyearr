@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Post Update | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/teacher-dashboard" class="sidebar-icon active">📊</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h1 class="cursive-header">Broadcaster</h1>
+                    <p class="text-muted" style="font-size: 0.9rem;">Share updates with your classes</p>
+                </div>
+                <a href="/teacher-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back to Dashboard</a>
+            </div>
+
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div class="card-premium">
+                    <div style="margin-bottom: 2rem;">
+                        <h2>New Announcement</h2>
+                        <p class="text-muted">Broadcast a headline and detailed message to all students.</p>
+                    </div>
+
+                    <form method="POST">
+                        <label class="form-label">NOTIFICATION HEADLINE</label>
+                        <input type="text" name="title" class="form-input-premium"
+                            placeholder="e.g. Mid-term Schedule Released" required autofocus>
+
+                        <label class="form-label">DETAILED MESSAGE</label>
+                        <textarea name="message" class="form-input-premium" rows="6"
+                            placeholder="Type the full announcement details here..." required
+                            style="resize: none;"></textarea>
+
+                        <button type="submit" class="btn-premium"
+                            style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.1rem; background: var(--accent-purple); color: #fff;">
+                            Post Announcement 🚀
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Dashboard | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon" title="Home">🏠</a>
+            <a href="/teacher-dashboard" class="sidebar-icon active" title="Dashboard">📊</a>
+            <a href="/profile" class="sidebar-icon" title="Profile">👤</a>
+            <a href="/post-notification" class="sidebar-icon" title="Notifications">📢</a>
+            <a href="/logout" class="sidebar-icon" title="Logout" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="cursive-header">Dashboard</h1>
+                <div class="search-container">
+                    <span>🔍</span>
+                    <input type="text" class="search-input" placeholder="Search students, classes...">
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="text-align: right;">
+                        <p style="font-weight: 600; font-size: 0.9rem;">{{ session['user'] }}</p>
+                        <p class="text-muted" style="font-size: 0.75rem;">Faculty Member</p>
+                    </div>
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                        {{ session['user'][0] | upper }}
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 2.25rem; margin-bottom: 2rem;">Hello, {{ session['user'] }}</h2>
+
+            <div class="summary-grid">
+                <div class="summary-card card-mint">
+                    <div>
+                        <h4>Active Sessions</h4>
+                        <p class="value">{{ active_sessions }}</p>
+                    </div>
+                    <a href="/generate-qr" class="link">Create New Session →</a>
+                    <span
+                        style="position: absolute; right: 10px; bottom: 10px; font-size: 4rem; opacity: 0.15;">📘</span>
+                </div>
+
+                <div class="summary-card card-yellow">
+                    <div>
+                        <h4>Students Present</h4>
+                        <p class="value">{{ total_present }}</p>
+                    </div>
+                    <a href="/today-attendance" class="link">View today's list →</a>
+                    <span
+                        style="position: absolute; right: 10px; bottom: 10px; font-size: 4rem; opacity: 0.15;">📅</span>
+                </div>
+
+                <div class="summary-card card-purple">
+                    <div>
+                        <h4>Notifications</h4>
+                        <p class="value">📢</p>
+                    </div>
+                    <a href="/post-notification" class="link">Post an update →</a>
+                    <span
+                        style="position: absolute; right: 10px; bottom: 10px; font-size: 4rem; opacity: 0.15;">📢</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="card-premium">
+                    <div class="card-title-row">
+                        <h3>Attendance Analytics</h3>
+                        <a href="/analytics" class="btn-premium">Report</a>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card-premium">
+                    <div class="card-title-row">
+                        <h3>Calendar</h3>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <div id="calendar-date" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">
+                        </div>
+                        <div id="calendar-grid"
+                            style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; font-size: 0.8rem;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-premium">
+                <div class="card-title-row">
+                    <h3>Recent Attendance Logs</h3>
+                    <a href="/attendance-report" class="btn-premium">View All</a>
+                </div>
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Time Scanned</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_logs %}
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ log.student }}</td>
+                            <td class="text-muted">{{ log.scan_time }}</td>
+                            <td class="text-muted">{{ log.subject }}</td>
+                            <td class="{% if log.status == 'Present' %}status-mint{% else %}status-yellow{% endif %}">
+                                {{ log.status }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted" style="padding: 2rem;">No logs recorded
+                                today.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const now = new Date();
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        document.getElementById('calendar-date').innerText = months[now.getMonth()] + " " + now.getFullYear();
+
+        const grid = document.getElementById('calendar-grid');
+        const days = ["S", "M", "T", "W", "T", "F", "S"];
+        days.forEach(d => grid.innerHTML += `<div class="text-muted">${d}</div>`);
+
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+        const lastDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
+        for (let i = 1; i <= lastDate; i++) {
+            const isToday = i === now.getDate();
+            grid.innerHTML += `<div style="${isToday ? 'background: var(--accent-yellow); color: #000; border-radius: 6px; font-weight: 700;' : ''}">${i}</div>`;
+        }
+
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                datasets: [{
+                    label: 'Attendance',
+                    data: [65, 78, 82, 75, 88, 70],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8a8d91' } },
+                    x: { grid: { display: false }, ticks: { color: '#8a8d91' } }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

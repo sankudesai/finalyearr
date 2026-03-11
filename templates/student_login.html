@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Student Login | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body class="login-container">
+
+    <div class="card-premium login-card">
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+            <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Student Access</h1>
+            <p class="text-muted">Sign in to your portal</p>
+        </div>
+
+        <form method="POST">
+            <label class="form-label">STUDENT ID / EMAIL</label>
+            <input type="text" name="username" class="form-input-premium" placeholder="e.g. st_12345" required
+                autofocus>
+
+            <label class="form-label">PASSWORD</label>
+            <input type="password" name="password" class="form-input-premium" placeholder="••••••••" required>
+
+            <button type="submit" class="btn-premium"
+                style="width: 100%; justify-content: center; padding: 1rem; font-size: 1rem; background: var(--accent-mint);">
+                Enter Portal
+            </button>
+        </form>
+
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="/" class="text-muted" style="text-decoration: none; font-size: 0.85rem;">← Back to Selection</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

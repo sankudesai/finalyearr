@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Attendance | Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+    <style>
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, white, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 4rem;
+        }
+
+        .role-card-premium {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 3rem 2rem;
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card-premium:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .role-card-premium .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .role-card-premium:hover .icon-circle {
+            background: var(--accent-yellow);
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="landing-container">
+        <h1 class="hero-title">Smart Attendance</h1>
+        <p class="text-muted" style="font-size: 1.1rem;">Next-Generation Attendance Intelligence for Modern Classrooms.
+        </p>
+
+        <div class="role-grid">
+            <a href="/student-login" class="role-card-premium">
+                <div class="icon-circle">🎓</div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Student Portal</h2>
+                <p class="text-muted" style="font-size: 0.9rem; line-height: 1.6;">Scan QR codes, track your attendance
+                    history, and stay updated.</p>
+                <div class="btn-premium" style="margin-top: 2rem;">Student Access</div>
+            </a>
+
+            <a href="/teacher-login" class="role-card-premium">
+                <div class="icon-circle">👨‍🏫</div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.75rem;">Faculty Portal</h2>
+                <p class="text-muted" style="font-size: 0.9rem; line-height: 1.6;">Generate dynamic QR codes, manage
+                    classroom logs and analytics.</p>
+                <div class="btn-premium" style="margin-top: 2rem; background: var(--accent-mint);">Faculty Access</div>
+            </a>
+        </div>
+
+        <div style="margin-top: 5rem;" class="text-muted small">
+            © 2026 Smart Attendance System • Built for Excellence
+        </div>
+    </div>
+
+</body>
+
+</html>

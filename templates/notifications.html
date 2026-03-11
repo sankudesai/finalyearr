@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Course Updates | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+    <style>
+        .notification-item {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            display: flex;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            transform: translateX(10px);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/student-dashboard" class="sidebar-icon">🎓</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/notifications" class="sidebar-icon active">📢</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="cursive-header">Course Updates</h1>
+                <a href="/student-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back to Portal</a>
+            </div>
+
+            <div class="card-premium">
+                {% if notes %}
+                {% for n in notes %}
+                <div class="notification-item">
+                    <div class="icon-box">🔔</div>
+                    <div style="flex: 1;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.1rem;">{{ n.title }}</h3>
+                            <span class="text-muted small">{{ n.date }}</span>
+                        </div>
+                        <p class="text-muted" style="line-height: 1.6;">{{ n.message }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="text-align: center; padding: 5rem 0;">
+                    <span style="font-size: 4rem; display: block; margin-bottom: 1rem; opacity: 0.1;">📢</span>
+                    <p class="text-muted">No course updates or announcements at this time.</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>My Intelligence | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/student-dashboard" class="sidebar-icon active">🎓</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/notifications" class="sidebar-icon">📢</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h1 class="cursive-header">My Intelligence</h1>
+                    <p class="text-muted" style="font-size: 0.9rem;">Course performance & attendance health</p>
+                </div>
+                <a href="/student-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back to Portal</a>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Performance Trend -->
+                <div class="card-premium">
+                    <h3 style="margin-bottom: 1.5rem;">Daily Activity (Last 7 Days)</h3>
+                    <div style="height: 300px;">
+                        <canvas id="studentTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Goal Tracker -->
+                <div class="card-premium"
+                    style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                    <div class="text-muted" style="font-size: 0.8rem; margin-bottom: 1rem; letter-spacing: 1px;">TOTAL
+                        PERCENTAGE</div>
+                    <div style="font-size: 4rem; font-weight: 700; color: var(--accent-yellow);">{{ percentage }}%</div>
+
+                    <div style="margin-top: 2rem; width: 100%;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            <span>Progress to 75% Goal</span>
+                            <span>{{ percentage }} / 75</span>
+                        </div>
+                        <div
+                            style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                            <div
+                                style="height: 100%; width: {{ (percentage / 75 * 100)|round if percentage < 75 else 100 }}%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-mint));">
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if target_gap > 0 %}
+                    <p class="text-muted mt-4" style="font-size: 0.85rem;">You need <span
+                            style="color: var(--accent-yellow); font-weight: 700;">{{ target_gap }}%</span> more to
+                        reach the healthy threshold.</p>
+                    {% else %}
+                    <p class="status-mint mt-4" style="font-size: 0.85rem;">✅ You are above the 75% healthy threshold!
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Subject Scorecard -->
+            <div class="card-premium">
+                <h3 style="margin-bottom: 1.5rem;">Subject Scorecard</h3>
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Sessions</th>
+                            <th>Attended</th>
+                            <th>Health Rate</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if scorecard %}
+                        {% for s in scorecard %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ s._id }}</td>
+                            <td class="text-muted">{{ s.total }}</td>
+                            <td class="text-muted">{{ s.attended }}</td>
+                            <td style="font-weight: 700;">{{ s.percent }}%</td>
+                            <td>
+                                <span class="status-{{ s.health }}"
+                                    style="padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">
+                                    {% if s.health == 'mint' %}Healthy{% elif s.health == 'yellow' %}Warning{% else
+                                    %}Critical{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted" style="padding: 3rem;">No subject data
+                                available yet. Start scanning to see your scores!</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Student Trend Chart
+        new Chart(document.getElementById('studentTrendChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
+                datasets: [{
+                    label: 'Sessions Attended',
+                    data: {{ trend_data| tojson }
+        },
+            backgroundColor: '#c084fc',
+            borderRadius: 8
+                }]
+            },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#8a8d91', stepSize: 1 }
+                },
+                x: { grid: { display: false }, ticks: { color: '#8a8d91' } }
+            }
+        }
+        });
+    </script>
+</body>
+
+</html>

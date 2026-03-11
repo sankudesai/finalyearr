@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Generate Session | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-icon">🏠</a>
+            <a href="/teacher-dashboard" class="sidebar-icon active">📊</a>
+            <a href="/profile" class="sidebar-icon">👤</a>
+            <a href="/logout" class="sidebar-icon" style="margin-top: auto;">🚪</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="cursive-header">Session Generator</h1>
+                <a href="/teacher-dashboard" class="btn-premium"
+                    style="background: rgba(255,255,255,0.05); color: white;">Back</a>
+            </div>
+
+            {% if entry_img %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Entry QR (Always visible once generated) -->
+                <div class="card-premium"
+                    style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div
+                        style="background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <img src="/static/qr/{{ entry_img }}" style="width: 200px; height: 200px; display: block;">
+                    </div>
+                    <h3 style="margin-top: 1.5rem; color: var(--accent-mint);">1. ENTRY CODE</h3>
+                    <p class="text-muted small">Students scan this first</p>
+                </div>
+
+                <!-- Confirmation QR (Visible only in Step 2) -->
+                <div class="card-premium"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    {% if confirm_img %}
+                    <div
+                        style="background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <img src="/static/qr/{{ confirm_img }}" style="width: 200px; height: 200px; display: block;">
+                    </div>
+                    <h3 style="margin-top: 1.5rem; color: var(--accent-yellow);">2. CONFIRMATION CODE</h3>
+                    <p class="text-muted small">Scan this to finalize attendance</p>
+                    {% else %}
+                    <div style="opacity: 0.1; font-size: 5rem; margin-bottom: 1rem;">🔒</div>
+                    <p class="text-muted" style="margin-bottom: 2rem;">Wait for students to enter, <br> then generate
+                        the final code.</p>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="generate_confirm">
+                        <input type="hidden" name="entry_id" value="{{ entry_id }}">
+                        <button type="submit" class="btn-premium"
+                            style="background: var(--accent-yellow); color: #000;">
+                            Generate Confirmation →
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-premium" style="text-align: center;">
+                <h2 style="color: white; margin-bottom: 0.5rem;">Session: {{ subject }}</h2>
+                <div style="margin-top: 1.5rem;">
+                    <a href="/generate-qr" class="btn-premium"
+                        style="background: rgba(255,255,255,0.05); color: white;">Create New Session</a>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- Initial Form -->
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="card-premium">
+                    <div style="margin-bottom: 2rem;">
+                        <h2>Start New Session</h2>
+                        <p class="text-muted">Phased QR authentication for secure attendance</p>
+                    </div>
+
+                    <form method="POST">
+                        <label class="form-label">SUBJECT / COURSE NAME</label>
+                        <input type="text" name="subject" class="form-input-premium" placeholder="e.g. Machine Learning"
+                            required autofocus>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label class="form-label">START TIME</label>
+                                <input type="time" name="class_start" class="form-input-premium" required>
+                            </div>
+                            <div>
+                                <label class="form-label">END TIME</label>
+                                <input type="time" name="class_end" class="form-input-premium" required>
+                            </div>
+                        </div>
+
+                        <label class="form-label">VALIDITY DURATION (MINUTES)</label>
+                        <input type="number" name="valid_minutes" class="form-input-premium" value="2" min="1" max="60"
+                            required>
+
+                        <button type="submit" class="btn-premium"
+                            style="width: 100%; justify-content: center; padding: 1rem; font-size: 1rem;">
+                            Begin Step 1: Entry Code
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+
+</body>
+
+</html>
