@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Faculty Register | Smart Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body class="login-container">
+    <div class="card-premium login-card">
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🏫</div>
+            <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Create Faculty Account</h1>
+            <p class="text-muted">Register as a teacher on the portal</p>
+        </div>
+
+        {% if error %}
+        <div
+            style="background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.4); color: #ff8080; padding: 0.9rem 1.2rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            <label class="form-label">FULL NAME</label>
+            <input type="text" name="name" class="form-input-premium" placeholder="e.g. Prof. Sharma" required
+                autofocus>
+
+            <label class="form-label">FACULTY ID / USERNAME</label>
+            <input type="text" name="username" class="form-input-premium" placeholder="e.g. prof_sharma" required>
+
+            <label class="form-label">PASSWORD</label>
+            <input type="password" name="password" class="form-input-premium" placeholder="••••••••" required>
+
+            <button type="submit" class="btn-premium"
+                style="width: 100%; justify-content: center; padding: 1rem; font-size: 1rem; background: var(--accent-mint); color: #000; margin-top: 0.5rem;">
+                Create Account
+            </button>
+        </form>
+
+        <div style="margin-top: 2rem; text-align: center; display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="/teacher-login" class="text-muted" style="text-decoration: none; font-size: 0.85rem;">Already have
+                an account? Sign In →</a>
+            <a href="/" class="text-muted" style="text-decoration: none; font-size: 0.85rem;">← Back to Selection</a>
+        </div>
+    </div>
+</body>
+
+</html>

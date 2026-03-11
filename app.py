@@ -57,6 +57,36 @@ def teacher_login():
         return render_template("teacher_login.html", error="Invalid credentials")
     return render_template("teacher_login.html")
 
+# ===================== REGISTER =====================
+@app.route("/student-register", methods=["GET", "POST"])
+def student_register():
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        password = request.form["password"]
+        name = request.form["name"].strip()
+        if users_col.find_one({"username": username, "role": "student"}):
+            return render_template("student_register.html", error="Username already exists")
+        users_col.insert_one({"username": username, "password": password, "name": name, "role": "student"})
+        session["user"] = username
+        session["role"] = "student"
+        return redirect("/student-dashboard")
+    return render_template("student_register.html")
+
+@app.route("/teacher-register", methods=["GET", "POST"])
+def teacher_register():
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        password = request.form["password"]
+        name = request.form["name"].strip()
+        if users_col.find_one({"username": username, "role": "teacher"}):
+            return render_template("teacher_register.html", error="Username already exists")
+        users_col.insert_one({"username": username, "password": password, "name": name, "role": "teacher"})
+        session["user"] = username
+        session["role"] = "teacher"
+        return redirect("/teacher-dashboard")
+    return render_template("teacher_register.html")
+
+
 # ===================== DASHBOARDS =====================
 @app.route("/student-dashboard")
 def student_dashboard():
