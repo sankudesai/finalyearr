@@ -48,9 +48,13 @@
                             <td class="status-mint">{{ r.status }}</td>
                             <td>
                                 {% if r.status == "Present" %}
-                                <a href="/mark-absent/{{ r._id }}"
-                                    style="color: var(--accent-purple); font-size: 0.8rem; text-decoration: none; font-weight: 600;">MARK
+                                <a href="/mark-status/{{ r._id }}/Absent"
+                                    style="color: var(--accent-purple); font-size: 0.8rem; text-decoration: none; font-weight: 600; background: rgba(139,92,246,0.15); padding: 4px 10px; border-radius: 6px;">MARK
                                     ABSENT</a>
+                                {% else %}
+                                <a href="/mark-status/{{ r._id }}/Present"
+                                    style="color: var(--accent-mint); font-size: 0.8rem; text-decoration: none; font-weight: 600; background: rgba(52,211,153,0.15); padding: 4px 10px; border-radius: 6px;">MARK
+                                    PRESENT</a>
                                 {% endif %}
                             </td>
                         </tr>

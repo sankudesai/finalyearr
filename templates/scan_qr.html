@@ -15,6 +15,13 @@
             background: #000 !important;
         }
 
+        /* Hide the file/image upload section completely */
+        #reader__filescan_input,
+        #reader__dashboard_section_fsr,
+        #reader__dashboard_section_swaplink {
+            display: none !important;
+        }
+
         #reader__dashboard_section_csr button {
             background: var(--accent-yellow) !important;
             color: #000 !important;
@@ -29,7 +36,6 @@
 </head>
 
 <body>
-
     <div class="dashboard-layout">
         <nav class="sidebar">
             <a href="/" class="sidebar-icon">🏠</a>
@@ -69,15 +75,11 @@
     <script>
         function onScanSuccess(decodedText, decodedResult) {
             document.getElementById('qr-input').value = decodedText;
-
-            // Visual feedback before redirect
             document.getElementById('status-msg').innerHTML = "✅ Code captured! Redirecting...";
             document.getElementById('status-msg').style.color = "var(--accent-mint)";
-
             html5QrcodeScanner.clear().then(_ => {
                 document.getElementById('result-form').submit();
             }).catch(error => {
-                console.error("Failed to clear scanner", error);
                 document.getElementById('result-form').submit();
             });
         }
@@ -87,11 +89,24 @@
             {
                 fps: 15,
                 qrbox: { width: 250, height: 250 },
-                showTorchButtonIfSupported: true
+                showTorchButtonIfSupported: true,
+                // Force back/environment camera on mobile
+                facingMode: "environment",
+                rememberLastUsedCamera: true
             },
             /* verbose= */ false
         );
         html5QrcodeScanner.render(onScanSuccess);
+
+        // Remove the "Select Image" section after render
+        setTimeout(() => {
+            const fileSection = document.getElementById('reader__filescan_input');
+            if (fileSection) fileSection.style.display = 'none';
+            const swapLink = document.querySelector('#reader__dashboard_section_swaplink');
+            if (swapLink) swapLink.style.display = 'none';
+            const fsr = document.querySelector('#reader__dashboard_section_fsr');
+            if (fsr) fsr.style.display = 'none';
+        }, 500);
     </script>
 </body>
 

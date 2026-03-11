@@ -457,6 +457,19 @@ def profile():
         return redirect("/profile")
     return render_template("profile.html", user=user)
 
+# ===================== MARK ATTENDANCE =====================
+@app.route("/mark-status/<record_id>/<status>")
+def mark_status(record_id, status):
+    if session.get("role") != "teacher":
+        return redirect("/")
+    if status not in ["Present", "Absent"]:
+        return redirect("/today-attendance")
+    attendance_col.update_one(
+        {"_id": ObjectId(record_id)},
+        {"$set": {"status": status}}
+    )
+    return redirect("/today-attendance")
+
 # ===================== LOGOUT =====================
 @app.route("/logout")
 def logout():
