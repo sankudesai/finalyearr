@@ -244,13 +244,18 @@ def scan_result():
         return render_template("scan_result.html", status="Expired", message="This QR code has expired.")
 
     if qr["type"] == "entry":
-        # Record entry
+        # Record entry in pending state
         entry_list = pending_confirmations.get(qr_id, {})
         entry_list[student] = True
         pending_confirmations[qr_id] = entry_list
-        return render_template("scan_result.html", 
-                               status="Entry Recorded", 
+
+        # Invalidate the entry QR so it cannot be scanned again
+        active_qr.pop(qr_id, None)
+
+        return render_template("scan_result.html",
+                               status="Entry Recorded",
                                message="Entry recorded successfully. Please scan the Confirmation QR to complete the process.")
+
 
     elif qr["type"] == "confirm":
         # Verify sequence
