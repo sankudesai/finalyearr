@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
 
 # ===================== CONFIG =====================
 QR_FOLDER = "static/qr"
@@ -14,7 +14,8 @@ active_qr = {}
 pending_confirmations = {} # session_id -> {student_id: True}
 
 # ===================== DATABASE =====================
-client = MongoClient("mongodb://localhost:27017/")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client["smart_attendance"]
 users_col = db["users"]
 attendance_col = db["attendance"]

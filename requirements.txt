@@ -1,0 +1,6 @@
+flask
+pymongo
+qrcode
+pillow
+gunicorn
+dnspython
