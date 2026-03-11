@@ -21,6 +21,16 @@ users_col = db["users"]
 attendance_col = db["attendance"]
 notify_col = db["notifications"]
 
+# ===================== SEED DEFAULT ACCOUNTS =====================
+def seed_defaults():
+    if not users_col.find_one({"username": "teacher1", "role": "teacher"}):
+        users_col.insert_one({"username": "teacher1", "password": "welcome123", "name": "Default Teacher", "role": "teacher"})
+    if not users_col.find_one({"username": "student1", "role": "student"}):
+        users_col.insert_one({"username": "student1", "password": "welcome123", "name": "Default Student", "role": "student"})
+
+seed_defaults()
+
+
 # ===================== HOME =====================
 @app.route("/")
 def home():
