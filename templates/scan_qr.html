@@ -13,16 +13,6 @@
             overflow: hidden;
             background: #000;
         }
-
-        #start-btn {
-            width: 100%;
-            justify-content: center;
-            padding: 1rem;
-            font-size: 1.1rem;
-            background: var(--accent-mint);
-            color: #000;
-            font-weight: 700;
-        }
     </style>
 </head>
 
@@ -42,94 +32,114 @@
                     style="background: rgba(255,255,255,0.05); color: white;">Cancel</a>
             </div>
 
-            <div style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div style="max-width: 600px; margin: 0 auto;">
 
-                <!-- Step 1: Idle / Start -->
-                <div class="card-premium" id="step-idle">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📋</span>
-                        <h2 style="margin-bottom: 0.5rem;">Scan Entry QR First</h2>
-                        <p class="text-muted">Find the Entry QR code on the board and tap the button below to scan it.
-                        </p>
-                    </div>
-                    <button class="btn-premium" id="start-btn" onclick="startCamera()">
-                        📷 Start Camera & Scan
+                <!-- MODE: WAITING (Entry scanned, waiting for teacher to release Confirmation QR) -->
+                {% if mode == "waiting" %}
+                <div class="card-premium" style="text-align: center; padding: 4rem 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1.5rem; animation: pulse 1.5s infinite;">⏳</div>
+                    <h2 style="color: var(--accent-yellow); margin-bottom: 1rem;">Entry Recorded!</h2>
+                    <p class="text-muted" style="margin-bottom: 2rem;">Waiting for your teacher to release the
+                        <strong>Confirmation QR</strong>. Once they do, come back here to scan it.</p>
+                    <button onclick="location.reload()" class="btn-premium"
+                        style="background: var(--accent-yellow); color: #000;">
+                        🔄 Check Again
                     </button>
                 </div>
+                <style>
+                    @keyframes pulse {
 
-                <!-- Step 2: Camera Active -->
-                <div class="card-premium" id="step-camera" style="display: none;">
+                        0%,
+                        100% {
+                            opacity: 1
+                        }
+
+                        50% {
+                            opacity: 0.4
+                        }
+                    }
+                </style>
+
+                <!-- MODE: SCAN (Camera active) -->
+                {% elif mode == "scan" %}
+                <div class="card-premium">
                     <div style="text-align: center; margin-bottom: 1rem;">
-                        <h3 id="scan-label" style="color: var(--accent-mint);">SCANNING: Entry QR</h3>
+                        {% if qr_type == "confirm" %}
+                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">✅</span>
+                        <h2 style="color: var(--accent-yellow);">Scan Confirmation QR</h2>
+                        <p class="text-muted" style="font-size: 0.9rem;">Point your camera at the Confirmation QR on the
+                            board</p>
+                        {% else %}
+                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📋</span>
+                        <h2 style="color: var(--accent-mint);">Scan Entry QR</h2>
+                        <p class="text-muted" style="font-size: 0.9rem;">Point your camera at the Entry QR on the board
+                        </p>
+                        {% endif %}
                     </div>
+
                     <div id="reader"></div>
+
+                    <form id="result-form" action="/scan-result" method="POST" style="display: none;">
+                        <input type="hidden" name="session_id" id="qr-input">
+                    </form>
+
                     <p id="status-msg" class="text-muted"
                         style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
-                        Point your camera at the Entry QR code
+                        Scanning...
                     </p>
                 </div>
 
-            </div>
+                <script>
+                    let scanning = false;
+                    const html5QrCode = new Html5Qrcode("reader");
 
-            <form id="result-form" action="/scan-result" method="POST" style="display: none;">
-                <input type="hidden" name="session_id" id="qr-input">
-            </form>
+                    html5QrCode.start(
+                        { facingMode: { exact: "environment" } },
+                        { fps: 15, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+                        onScanSuccess, onScanError
+                    ).catch(() => {
+                        html5QrCode.start(
+                            { facingMode: "environment" },
+                            { fps: 15, qrbox: { width: 250, height: 250 } },
+                            onScanSuccess, onScanError
+                        ).catch(err => {
+                            document.getElementById('status-msg').innerHTML = "⚠️ Camera access denied. Please allow camera in browser settings.";
+                        });
+                    });
+
+                    function onScanSuccess(decodedText) {
+                        if (scanning) return;
+                        scanning = true;
+                        document.getElementById('qr-input').value = decodedText;
+                        document.getElementById('status-msg').innerHTML = "✅ QR captured! Processing...";
+                        document.getElementById('status-msg').style.color = "var(--accent-mint)";
+                        html5QrCode.stop().then(() => {
+                            document.getElementById('result-form').submit();
+                        }).catch(() => {
+                            document.getElementById('result-form').submit();
+                        });
+                    }
+
+                    function onScanError(err) { /* silent */ }
+                </script>
+
+                <!-- MODE: IDLE (Default: no QR yet, show start button) -->
+                {% else %}
+                <div class="card-premium" style="text-align: center; padding: 3rem 2rem;">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📋</span>
+                    <h2 style="margin-bottom: 0.5rem;">Scan Entry QR First</h2>
+                    <p class="text-muted" style="margin-bottom: 2rem;">Find the Entry QR code on the board and tap below
+                        to scan it.</p>
+                    <a href="/scan-qr" class="btn-premium"
+                        style="background: var(--accent-mint); color: #000; justify-content: center; width: 100%;">
+                        📷 Open Camera & Scan
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
         </main>
     </div>
-
-    <script>
-        let html5QrCode = null;
-        let scanning = false;
-
-        function startCamera() {
-            document.getElementById('step-idle').style.display = 'none';
-            document.getElementById('step-camera').style.display = 'block';
-
-            html5QrCode = new Html5Qrcode("reader");
-
-            // Force back/environment camera – works on iPhone & Android
-            html5QrCode.start(
-                { facingMode: { exact: "environment" } },
-                {
-                    fps: 15,
-                    qrbox: { width: 250, height: 250 },
-                    aspectRatio: 1.0
-                },
-                onScanSuccess,
-                onScanError
-            ).catch(err => {
-                // Fallback: try without exact constraint (some devices)
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 15, qrbox: { width: 250, height: 250 } },
-                    onScanSuccess,
-                    onScanError
-                ).catch(err2 => {
-                    document.getElementById('status-msg').innerHTML =
-                        "⚠️ Camera access denied. Please allow camera in browser settings.";
-                });
-            });
-        }
-
-        function onScanSuccess(decodedText) {
-            if (scanning) return;
-            scanning = true;
-
-            document.getElementById('qr-input').value = decodedText;
-            document.getElementById('status-msg').innerHTML = "✅ QR captured! Processing...";
-            document.getElementById('status-msg').style.color = "var(--accent-mint)";
-
-            html5QrCode.stop().then(() => {
-                document.getElementById('result-form').submit();
-            }).catch(() => {
-                document.getElementById('result-form').submit();
-            });
-        }
-
-        function onScanError(error) {
-            // Silent - just scanning frames
-        }
-    </script>
 </body>
 
 </html>

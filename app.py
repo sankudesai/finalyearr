@@ -214,17 +214,45 @@ def scan_qr():
     if session.get("role") != "student":
         return redirect("/")
 
-    if not active_qr:
-        return redirect("/student-dashboard")
+    student = session["user"]
 
-    qr_id = list(active_qr.keys())[0]
-    qr = active_qr[qr_id]
-    remaining = int((qr["qr_expiry"] - datetime.now()).total_seconds())
+    student_pending = False
+    pending_entry_id = None
+    for entry_id, students in pending_confirmations.items():
+        if student in students:
+            student_pending = True
+            pending_entry_id = entry_id
+            break
 
-    if remaining <= 0:
-        return redirect("/student-dashboard")
+    now = datetime.now()
 
-    return render_template("scan_qr.html", remaining_time=remaining)
+    if student_pending:
+        # Check if confirm QR is ready and not expired
+        confirm_ready = False
+        for q_id, q_data in active_qr.items():
+            if q_data.get("type") == "confirm" and q_data.get("entry_id") == pending_entry_id:
+                if now <= q_data["qr_expiry"]:
+                    confirm_ready = True
+                break
+        
+        if confirm_ready:
+            return render_template("scan_qr.html", mode="scan", qr_type="confirm")
+        else:
+            return render_template("scan_qr.html", mode="waiting")
+
+    # Not pending, meaning they need to scan an Entry QR.
+    entry_ready = False
+    for q_id, q_data in active_qr.items():
+        if q_data.get("type") == "entry":
+            if now <= q_data["qr_expiry"]:
+                entry_ready = True
+            break
+
+    if entry_ready:
+        return render_template("scan_qr.html", mode="scan", qr_type="entry")
+
+    return redirect("/student-dashboard")
+
 
 # ===================== SCAN RESULT =====================
 @app.route("/scan-result", methods=["POST"])
@@ -249,12 +277,9 @@ def scan_result():
         entry_list[student] = True
         pending_confirmations[qr_id] = entry_list
 
-        # Invalidate the entry QR so it cannot be scanned again
-        active_qr.pop(qr_id, None)
-
         return render_template("scan_result.html",
                                status="Entry Recorded",
-                               message="Entry recorded successfully. Please scan the Confirmation QR to complete the process.")
+                               message="Entry recorded successfully. Please wait to scan the Confirmation QR.")
 
 
     elif qr["type"] == "confirm":
